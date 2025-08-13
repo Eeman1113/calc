@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unit Economics Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8 max-w-4xl">
+        <header class="text-center mb-8">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">Unit Economics Calculator</h1>
+            <p class="mt-2 text-md text-gray-600">Enter your key business metrics to calculate unit economics.</p>
+        </header>
+
+        <!-- Inputs Section -->
+        <div class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 mb-8">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Input Variables</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                <div>
+                    <label for="variableCost" class="block text-sm font-medium text-gray-700 mb-1">Variable Cost / User / Month (₹)</label>
+                    <input type="number" id="variableCost" value="90.0" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label for="opex" class="block text-sm font-medium text-gray-700 mb-1">OPEX (₹ Cr)</label>
+                    <input type="number" id="opex" value="7.82" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label for="startUsers" class="block text-sm font-medium text-gray-700 mb-1">Start Users</label>
+                    <input type="number" id="startUsers" value="37600" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label for="endUsers" class="block text-sm font-medium text-gray-700 mb-1">End Users (after 1 year)</label>
+                    <input type="number" id="endUsers" value="150000" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                 <div>
+                    <label for="avgMonthlyUsers" class="block text-sm font-medium text-gray-700 mb-1">Avg Monthly Users</label>
+                    <input type="number" id="avgMonthlyUsers" value="43578" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label for="arpu" class="block text-sm font-medium text-gray-700 mb-1">ARPU (₹)</label>
+                    <input type="number" id="arpu" value="309" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label for="monthlyChurn" class="block text-sm font-medium text-gray-700 mb-1">Monthly Churn Rate (%)</label>
+                    <input type="number" id="monthlyChurn" value="11" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+                <div>
+                    <label for="cac" class="block text-sm font-medium text-gray-700 mb-1">CAC (₹)</label>
+                    <input type="number" id="cac" value="700" class="w-full p-3 bg-gray-100 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
+                </div>
+            </div>
+            <div class="mt-8 text-center">
+                <button id="calculateBtn" class="w-full md:w-auto bg-blue-600 text-white font-bold py-3 px-12 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transition-all duration-300 ease-in-out transform hover:scale-105">
+                    Calculate
+                </button>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results" class="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 hidden">
+            <h2 class="text-2xl font-semibold mb-6 text-gray-800 border-b pb-3">Calculated Metrics</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white">
+                    <thead class="bg-gray-100 text-gray-700 uppercase text-sm leading-normal">
+                        <tr>
+                            <th class="py-3 px-6 text-left">Metric</th>
+                            <th class="py-3 px-6 text-left">Value</th>
+                            <th class="py-3 px-6 text-left">Formula / Notes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-tbody" class="text-gray-800 text-sm font-light">
+                        <!-- Results will be dynamically inserted here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+         <!-- Message for invalid inputs -->
+        <div id="error-message" class="hidden mt-4 text-center bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg" role="alert">
+            <strong class="font-bold">Invalid Input!</strong>
+            <span class="block sm:inline">Please check your values. All inputs must be positive numbers.</span>
+        </div>
+    </div>
+
+    <script>
+        const calculateBtn = document.getElementById('calculateBtn');
+        const resultsDiv = document.getElementById('results');
+        const resultsTbody = document.getElementById('results-tbody');
+        const errorMessage = document.getElementById('error-message');
+
+        // Function to format numbers to Indian currency style (Crores, Lakhs)
+        const formatIndianCurrency = (num) => {
+            if (num >= 10000000) {
+                return (num / 10000000).toFixed(2) + ' Cr';
+            }
+            if (num >= 100000) {
+                return (num / 100000).toFixed(2) + ' Lakh';
+            }
+            return new Intl.NumberFormat('en-IN', { maximumFractionDigits: 2 }).format(num);
+        };
+        
+        // Function to create a table row
+        const createResultRow = (metric, value, notes = '') => {
+            const row = document.createElement('tr');
+            row.className = 'border-b border-gray-200 hover:bg-gray-50';
+            row.innerHTML = `
+                <td class="py-4 px-6 text-left whitespace-nowrap">
+                    <span class="font-medium">${metric}</span>
+                </td>
+                <td class="py-4 px-6 text-left">
+                    <span class="font-bold text-blue-600 text-base">${value}</span>
+                </td>
+                <td class="py-4 px-6 text-left text-gray-600">
+                    ${notes}
+                </td>
+            `;
+            return row;
+        };
+
+        const calculate = () => {
+            // --- Get Inputs ---
+            const inputs = {
+                variableCost: parseFloat(document.getElementById('variableCost').value),
+                opexCr: parseFloat(document.getElementById('opex').value),
+                startUsers: parseFloat(document.getElementById('startUsers').value),
+                endUsers: parseFloat(document.getElementById('endUsers').value),
+                avgMonthlyUsers: parseFloat(document.getElementById('avgMonthlyUsers').value),
+                arpu: parseFloat(document.getElementById('arpu').value),
+                monthlyChurn: parseFloat(document.getElementById('monthlyChurn').value),
+                cac: parseFloat(document.getElementById('cac').value)
+            };
+
+            // --- Validate Inputs ---
+            if (Object.values(inputs).some(v => isNaN(v) || v < 0)) {
+                errorMessage.classList.remove('hidden');
+                resultsDiv.classList.add('hidden');
+                return;
+            }
+            errorMessage.classList.add('hidden');
+
+
+            // --- Perform Calculations ---
+            const monthlyGrowthRate = inputs.startUsers > 0 ? ((Math.pow(inputs.endUsers / inputs.startUsers, 1 / 12) - 1) * 100) : 0;
+            const annualRevenueRs = inputs.avgMonthlyUsers * inputs.arpu * 12;
+            const annualRevenueCr = annualRevenueRs / 10000000;
+            const totalVariableCostRs = inputs.avgMonthlyUsers * inputs.variableCost * 12;
+            const grossProfitRs = annualRevenueRs - totalVariableCostRs;
+            const grossProfitCr = grossProfitRs / 10000000;
+            const opexRs = inputs.opexCr * 10000000;
+            const ebitdaRs = grossProfitRs - opexRs;
+            const ebitdaCr = ebitdaRs / 10000000;
+            const burnRate = ebitdaRs < 0 ? Math.abs(ebitdaRs / 12) : 0;
+            const contributionMargin = inputs.arpu - inputs.variableCost;
+            const ltv = inputs.monthlyChurn > 0 ? contributionMargin / (inputs.monthlyChurn / 100) : 0;
+            const ltvToCacRatio = inputs.cac > 0 ? ltv / inputs.cac : 0;
+
+            // --- Display Results ---
+            resultsTbody.innerHTML = ''; // Clear previous results
+
+            resultsTbody.appendChild(createResultRow('Monthly Growth Rate', `${monthlyGrowthRate.toFixed(2)} %`, 'Based on Start and End Users over 12 months.'));
+            resultsTbody.appendChild(createResultRow('Annual Revenue', `${annualRevenueCr.toFixed(2)} Cr`, 'Avg Monthly Users * ARPU * 12'));
+            resultsTbody.appendChild(createResultRow('Gross Profit', `${grossProfitCr.toFixed(2)} Cr`, 'Annual Revenue - Total Variable Costs'));
+            resultsTbody.appendChild(createResultRow('EBITDA', `${ebitdaCr.toFixed(2)} Cr`, 'Gross Profit - OPEX'));
+            resultsTbody.appendChild(createResultRow('Burn Rate / Month', `₹ ${formatIndianCurrency(burnRate)}`, 'Monthly cash burn (if EBITDA is negative).'));
+            resultsTbody.appendChild(createResultRow('LTV (Lifetime Value)', `₹ ${formatIndianCurrency(ltv)}`, '(ARPU - Variable Cost) / Monthly Churn Rate'));
+            resultsTbody.appendChild(createResultRow('LTV:CAC Ratio', ltvToCacRatio.toFixed(2), 'Lifetime Value / Customer Acquisition Cost'));
+
+            resultsDiv.classList.remove('hidden');
+        };
+
+        calculateBtn.addEventListener('click', calculate);
+        
+        // Initial calculation on page load
+        window.onload = calculate;
+    </script>
+</body>
+</html>
